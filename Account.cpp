@@ -1,4 +1,11 @@
 #include "Account.h"
+Account::Account(int accountNumber, string name, long cardNumber, int pin = 0000)
+{
+    this->accountNumber = accountNumber;
+    this->name = name;
+    this->cardNumber = cardNumber;
+    this->pin = pin;
+}
 Account::Account(string name, double balance, int accountNumber)
 {
     this->name = name;

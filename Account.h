@@ -7,10 +7,12 @@ class Account
 private:
     string name;
     double balance;
-    int accountNumber;
+    int accountNumber, pin;
+    long cardNumber;
 
 public:
-    Account() {}
+    Account() {};
+    Account(int accountNumber, string name, long cardNumber, int pin);
     Account(string name, double balance, int accountNumber);
     void display();
     friend class Bank;
