@@ -1,6 +1,7 @@
 #ifndef BANK_H
 #define BANK_H
 #include "Account.h"
+#include "transaction.h"
 #include <iostream>
 #include <map>
 #include <fstream>
@@ -15,6 +16,7 @@ private:
     map<long, Account> accounts;
     map<int, bool> closedAccount;
     map<int, Account> card;
+    map<int, Transaction> transactionHistory;
 
 public:
     Bank() {}
@@ -29,7 +31,9 @@ public:
     void searchAccount(int accountNumber, int pin);
     void createPin(int accountNumber, int pin);
     void changePin(int accountNumber, int pin, int newPin);
+    void itransactionHistory(int accountNumber, int pin);
+    void showTransactionHistory();
 };
 int Bank::totalAccounts = 0;
-long Bank::cardNumber = 1000;
+long Bank::cardNumber = 999;
 #endif

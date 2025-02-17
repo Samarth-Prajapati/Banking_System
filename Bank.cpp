@@ -1,4 +1,5 @@
 #include "Bank.h"
+#include <sstream>
 void Bank::openAccount()
 {
     bool isValid = true;
@@ -41,12 +42,12 @@ void Bank::openAccount()
     cout << "--------------------------------" << endl;
     cout << "Account created successfully ." << endl;
     cout << "Remember your debit card number and generate pin for your account orelse you cant be able to access your account money ." << endl;
+    cardNumber++;
     cout << "Your card number is : " << cardNumber << endl;
     card[totalAccounts] = Account(totalAccounts, name, cardNumber, defaultPin);
     ofstream outFilePin("accountPin.txt", ios::app);
     outFilePin << totalAccounts << " " << name << "," << cardNumber << " " << defaultPin << endl;
     outFilePin.close();
-    cardNumber++;
     accounts[totalAccounts].display();
 }
 void Bank::deposit(int accountNumber, double amount, int pin)
@@ -72,6 +73,9 @@ void Bank::deposit(int accountNumber, double amount, int pin)
         accounts[accountNumber].balance += amount;
         cout << "Amount Deposited Successfully ." << endl;
         cout << accounts[accountNumber].balance << " : Current Balance ." << endl;
+        ofstream outTransactionHistory("transactionHistory.txt", ios::app);
+        outTransactionHistory << accountNumber << " " << accounts[accountNumber].name << "," << amount << " Deposit" << endl;
+        outTransactionHistory.close();
         updateFile();
         return;
     }
@@ -97,9 +101,17 @@ void Bank::withdraw(int accountNumber, double amount, int pin)
     }
     else if (closedAccount[accountNumber] == true)
     {
+        if (accounts[accountNumber].balance < 0)
+        {
+            cout << "Account Balance can't be negative ." << endl;
+            return;
+        }
         accounts[accountNumber].balance -= amount;
         cout << "Amount Withdrawn Successfully ." << endl;
         cout << accounts[accountNumber].balance << " : Current Balance ." << endl;
+        ofstream outTransactionHistory("transactionHistory.txt", ios::app);
+        outTransactionHistory << accountNumber << " " << accounts[accountNumber].name << "," << amount << " Withdraw" << endl;
+        outTransactionHistory.close();
         if (accounts[accountNumber].balance != 0)
         {
             cout << accounts[accountNumber].balance << " Please withdraw this amount for closing your account ." << endl;
@@ -125,6 +137,9 @@ void Bank::withdraw(int accountNumber, double amount, int pin)
         accounts[accountNumber].balance -= amount;
         cout << "Amount Withdrawn Successfully ." << endl;
         cout << accounts[accountNumber].balance << " : Current Balance ." << endl;
+        ofstream outTransactionHistory("transactionHistory.txt", ios::app);
+        outTransactionHistory << accountNumber << " " << accounts[accountNumber].name << "," << amount << " Withdraw" << endl;
+        outTransactionHistory.close();
         updateFile();
         return;
     }
@@ -327,7 +342,6 @@ void Bank::loadAccountsFromFile()
     ifstream inFilePin("accountPin.txt");
     if (!inFilePin)
     {
-        cout << "No existing accounts found." << endl;
         return;
     }
 
@@ -348,6 +362,27 @@ void Bank::loadAccountsFromFile()
         totalAccounts = acc;
     }
     inFilePin.close();
+    ifstream inTransactionHistory("transactionHistory.txt");
+    if (!inTransactionHistory)
+    {
+        return;
+    }
+
+    int num23;
+    string name23, type23;
+    double amt23;
+
+    while (inTransactionHistory >> num23)
+    {
+        inTransactionHistory.ignore();
+
+        getline(inTransactionHistory, name23, ',');
+        inTransactionHistory >> amt23;
+        inTransactionHistory.ignore();
+        inTransactionHistory >> type23;
+        transactionHistory[num23] = Transaction(num23, name23, amt23, type23);
+    }
+    inTransactionHistory.close();
 }
 void Bank::updateFile()
 {
@@ -363,4 +398,98 @@ void Bank::updateFile()
         outPin << pair.first << " " << pair.second.name << "," << pair.second.cardNumber << " " << pair.second.pin << endl;
     }
     outPin.close();
+}
+void Bank::itransactionHistory(int accountNumber, int pin)
+{
+    cout << "--------------------------------" << endl;
+    if (accounts.find(accountNumber) == accounts.end())
+    {
+        cout << "Account Not Found ! " << endl;
+        return;
+    }
+    else if (pin == 0000)
+    {
+        cout << "Please create pin for your account to access your account money ." << endl;
+        return;
+    }
+    else if (pin != card[accountNumber].pin)
+    {
+        cout << "Invalid Pin , Try again ." << endl;
+        return;
+    }
+    else
+    {
+        ifstream inFile("transactionHistory.txt");
+
+        if (!inFile)
+        {
+            cout << "No transactions found!" << endl;
+            return;
+        }
+
+        cout << "All Transactions: " << endl;
+        cout << "--------------------------------" << endl;
+
+        int accNo;
+        string name, type;
+        double amt;
+        string line;
+
+        while (getline(inFile, line))
+        {
+            istringstream iss(line);
+
+            iss >> accNo;
+
+            if (accNo != accountNumber)
+            {
+                continue;
+            }
+
+            iss.ignore();
+            getline(iss, name, ',');
+            iss >> amt;
+            iss.ignore();
+            iss >> type;
+
+            cout << "Account No: " << accNo
+                 << ", Name: " << name
+                 << ", Amount: " << amt
+                 << ", Type: " << type << endl;
+        }
+
+        inFile.close();
+    }
+}
+void Bank::showTransactionHistory()
+{
+    cout << "--------------------------------" << endl;
+    ifstream inFile("transactionHistory.txt");
+
+    if (!inFile)
+    {
+        cout << "No transactions found!" << endl;
+        return;
+    }
+
+    cout << "All Transactions: " << endl;
+    cout << "--------------------------------" << endl;
+
+    int accNo;
+    string name, type;
+    double amt;
+
+    while (inFile >> accNo)
+    {
+        inFile.ignore();
+        getline(inFile, name, ',');
+        inFile >> amt;
+        inFile.ignore();
+        inFile >> type;
+        inFile.ignore();
+
+        cout << "Account No: " << accNo << ", Name: " << name << ", Amount: " << amt << ", Type: " << type << endl;
+    }
+
+    inFile.close();
 }
