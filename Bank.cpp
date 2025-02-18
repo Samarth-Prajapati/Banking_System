@@ -1,5 +1,4 @@
 #include "Bank.h"
-#include <sstream>
 void Bank::openAccount()
 {
     bool isValid = true;
@@ -248,13 +247,19 @@ void Bank::searchAccount(int accountNumber, int pin)
     }
     cout << "Account Found : " << endl;
     accounts[accountNumber].display();
+    cout << "Card Number : " << card[accountNumber].cardNumber << endl;
 }
-void Bank::createPin(int accountNumber, int pin)
+void Bank::createPin(int accountNumber, int cn, int pin)
 {
     cout << "--------------------------------" << endl;
     if (accounts.find(accountNumber) == accounts.end())
     {
         cout << "Account Not Found ! " << endl;
+        return;
+    }
+    else if (card[accountNumber].cardNumber != cn)
+    {
+        cout << "Invalid Card Number , Try again ." << endl;
         return;
     }
     else if (card[accountNumber].pin != 0000)
@@ -460,36 +465,4 @@ void Bank::itransactionHistory(int accountNumber, int pin)
 
         inFile.close();
     }
-}
-void Bank::showTransactionHistory()
-{
-    cout << "--------------------------------" << endl;
-    ifstream inFile("transactionHistory.txt");
-
-    if (!inFile)
-    {
-        cout << "No transactions found!" << endl;
-        return;
-    }
-
-    cout << "All Transactions: " << endl;
-    cout << "--------------------------------" << endl;
-
-    int accNo;
-    string name, type;
-    double amt;
-
-    while (inFile >> accNo)
-    {
-        inFile.ignore();
-        getline(inFile, name, ',');
-        inFile >> amt;
-        inFile.ignore();
-        inFile >> type;
-        inFile.ignore();
-
-        cout << "Account No: " << accNo << ", Name: " << name << ", Amount: " << amt << ", Type: " << type << endl;
-    }
-
-    inFile.close();
 }

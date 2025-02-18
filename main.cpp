@@ -2,17 +2,19 @@
 #include "Bank.cpp"
 #include "Account.h"
 #include "Account.cpp"
+#include "transaction.h"
+#include "transaction.cpp"
 int main()
 {
     cout << "---------Banking System---------" << endl;
     Bank bank;
     bank.loadAccountsFromFile();
-    int choice1, accountNumber, pin, newPin;
+    int choice1, accountNumber, pin, newPin, card;
     double amount;
     do
     {
         cout << "--------------------------------" << endl;
-        cout << " 1. Open an account\n 2. Balance Enquiry\n 3. Deposit\n 4. Withdraw\n 5. Close an account\n 6. Show all accounts\n 7. Search Account\n 8. Create Pin\n 9. Change Pin\n 10. Exit" << endl;
+        cout << " 1. Open an account\n 2. Balance Enquiry\n 3. Deposit\n 4. Withdraw\n 5. Close an account\n 6. Show all accounts\n 7. Search Account\n 8. Create Pin\n 9. Change Pin\n 10. Transaction history\n 11. Exit" << endl;
         cout << "--------------------------------" << endl;
         cin >> choice1;
         switch (choice1)
@@ -65,9 +67,11 @@ int main()
         case 8:
             cout << "Enter Account Number : " << endl;
             cin >> accountNumber;
-            cout << "Enter Pin : " << endl;
+            cout << "Enter Card Number : " << endl;
+            cin >> card;
+            cout << "Create Pin : " << endl;
             cin >> pin;
-            bank.createPin(accountNumber, pin);
+            bank.createPin(accountNumber, card, pin);
             break;
         case 9:
             cout << "Enter Account Number : " << endl;
@@ -79,6 +83,13 @@ int main()
             bank.changePin(accountNumber, pin, newPin);
             break;
         case 10:
+            cout << "Enter Account Number : " << endl;
+            cin >> accountNumber;
+            cout << "Enter Pin : " << endl;
+            cin >> pin;
+            bank.itransactionHistory(accountNumber, pin);
+            break;
+        case 11:
             cout << "Thank You For Using Our Service." << endl;
             return 0;
         default:

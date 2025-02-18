@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <fstream>
+#include <sstream>
 #define MIN_BALANCE 500
 #define PINLENGTH 4
 using namespace std;
@@ -29,7 +30,7 @@ public:
     void closeAccount(int accountNumber, int pin);
     void showAccounts();
     void searchAccount(int accountNumber, int pin);
-    void createPin(int accountNumber, int pin);
+    void createPin(int accountNumber, int cn, int pin);
     void changePin(int accountNumber, int pin, int newPin);
     void itransactionHistory(int accountNumber, int pin);
     void showTransactionHistory();
